@@ -7,5 +7,6 @@ My solutions to the assignments of the [WIS Python course](https://github.com/Co
 | [day01](day01/) | Introducing myself on my GitHub website |
 | [day02](day02/) | Opening issues, Hello World, and a Nokia jingle in Python |
 | [day03](day03/) | Stack Analysis Studio, an app for analysing 3D image stacks |
+| [day04](day04/) | Stack Analysis Studio as a web application (Flask) |
 
 My website: https://oshritgeller-bit.github.io/

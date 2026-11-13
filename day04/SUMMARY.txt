@@ -1,0 +1,117 @@
+==============================================================
+  DAY 04  -  STACK ANALYSIS STUDIO ON THE WEB (FLASK)
+==============================================================
+
+IN ONE SENTENCE
+---------------
+I took my Day 03 desktop app for analysing 3D microscopy stacks
+and gave it a web interface with Flask. Both versions run the
+same Python analysis code.
+
+
+THE ASSIGNMENT
+--------------
+Take a previous project, copy it to day04, write a web
+application that uses its "business logic", and check that both
+the old and the new systems work.
+
+  [x] Copied Day 03 to day04
+  [x] Wrote a Flask web application
+  [x] Reused the same business logic
+  [x] Tested both systems
+
+
+WHAT I BUILT
+------------
+                 DESKTOP (Day 03)        WEB (Day 04)
+  Start it       python run_app.py       python web_app.py
+  Open it        its own window          browser: http://127.0.0.1:5000
+  Image viewer   napari                  slice images from the server
+  UI <-> Python  Qt WebChannel           HTTP + JSON
+  Analysis runs  inside the app          on the server
+
+In the browser you can:
+  * load a sample stack (synthetic blobs offline, or cells3d)
+  * check and change the calibration (voxel size and unit)
+  * run a 3D segmentation and get object statistics
+  * explore z-profiles, tables and charts; click a point or a row
+    to jump to that slice
+  * move through slices with the slider or the left/right arrow keys
+  * download the Markdown report, the CSV table, or a slice as PNG
+
+
+HOW IT WORKS
+------------
+  BROWSER  --- sends what you typed --->  SERVER (Flask)
+           <--- numbers and pictures ---
+
+  The browser never does the maths. All analysis runs in Python
+  on the server.
+
+  Server files:
+    web_app.py           Flask routes, server state, background jobs  (new)
+    analysis_service.py  input checking + analysis, shared by both    (new)
+    slice_render.py      draws one slice as a PNG image               (new)
+    stack_analysis.py    the analysis itself                          (unchanged)
+    reporting.py         Markdown report and CSV                      (unchanged)
+
+
+THE DECISIONS I MADE
+--------------------
+  1. Viewer        napari can't run in a browser, so the server
+                   draws each slice as a PNG and the page shows it
+                   with a slider.
+  2. Long jobs     A cells3d analysis takes ~15 s, so it runs in the
+                   background. The page checks on it a few times a
+                   second and shows progress. The page never freezes.
+  3. Shared logic  The input checking used to live inside the
+                   desktop window. I moved it to analysis_service.py,
+                   so both apps use exactly the same code.
+  4. Same look     I reused the Day 03 interface. Only the connection
+                   to Python changed.
+  5. Scope         Kept the core features and downloads. Left out the
+                   3D view and report import.
+
+
+HOW TO RUN
+----------
+  cd stack_analysis_studio
+  pip install -r requirements-web.txt
+  python web_app.py
+  -> open http://127.0.0.1:5000
+
+  Other computers on the same network:
+  python web_app.py --host 0.0.0.0
+  -> open http://<this computer's IP>:5000
+
+  Stop the server:  Ctrl-C
+
+  Old desktop app:  python run_app.py
+
+
+PROOF THAT BOTH WORK
+--------------------
+  Web app tests (test_web_app.py) ............... 7/7 passed
+  Web app in a real browser (headless Chrome) ... passed
+  Web and desktop give the same results ......... checked by a test
+  Desktop analysis tests ........................ passed
+  Desktop napari test + end-to-end test ......... passed
+
+
+GOOD TO KNOW
+------------
+  * The server holds one workspace, so it's made for one person
+    at a time.
+  * Flask's built-in server is for development. A real online
+    server would use something like gunicorn.
+  * The measurements are estimates from classical image analysis,
+    as in Day 03.
+
+
+MORE
+----
+  Full technical details:  stack_analysis_studio/README.md
+  Original Day 03 app:     ../day03/
+
+  Built with Claude (Opus 5.5) in VS Code. I made the design
+  decisions, and Claude wrote and tested the code.

@@ -1,0 +1,7 @@
+# Web version only (no Qt / napari), e.g. for a server: pip install -r requirements-web.txt
+flask>=3.0
+pillow>=10.0
+numpy>=1.25
+scipy>=1.14
+scikit-image>=0.21
+pooch>=1.7
